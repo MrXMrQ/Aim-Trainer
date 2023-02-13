@@ -38,7 +38,6 @@ public class MainMenu {
         noobButton.addActionListener(e -> {
             remover();
             AimTrainerWindow.difficulty = 3000;
-            AimTrainerWindow.timeToRespawn = 300;
             AimTrainerWindow.timer = 30;
             new AimTrainerWindow();
         });
@@ -49,7 +48,6 @@ public class MainMenu {
         easyButton.addActionListener(e -> {
             remover();
             AimTrainerWindow.difficulty = 2000;
-            AimTrainerWindow.timeToRespawn = 300;
             AimTrainerWindow.timer = 45;
             new AimTrainerWindow();
         });
@@ -60,7 +58,6 @@ public class MainMenu {
         normalButton.addActionListener(e -> {
             remover();
             AimTrainerWindow.difficulty = 1000;
-            AimTrainerWindow.timeToRespawn = 300;
             AimTrainerWindow.timer = 60;
             new AimTrainerWindow();
         });
@@ -70,8 +67,7 @@ public class MainMenu {
         hardButton.setPreferredSize(new Dimension(100, 25));
         hardButton.addActionListener(e -> {
             remover();
-            AimTrainerWindow.difficulty = 500;
-            AimTrainerWindow.timeToRespawn = 2000;
+            AimTrainerWindow.difficulty = 100;
             AimTrainerWindow.timer = 90;
             new AimTrainerWindow();
         });

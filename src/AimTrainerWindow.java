@@ -5,6 +5,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class AimTrainerWindow {
+
+    MyFrame targetWindow;
     //Panel
     JPanel panelNORTH;
     JPanel panelCENTER;
@@ -18,17 +20,14 @@ public class AimTrainerWindow {
     Thread countDownEnterThread;
     Thread countDownAimTrainerThread;
     Thread targetsForAimTrainerThread;
-    Thread respawnThread;
 
     //Other
     public static int difficulty;
-    public static int timeToRespawn;
     boolean countDownAfterEnterFinished = false;
     boolean countDownTargets = true;
     public static int timer;
     ArrayList<JPanel> targetList = new ArrayList<>();
-    boolean respawn = false;
-    int index = 0;
+    int currentElement = 0;
 
     public AimTrainerWindow() {
         aimThread = new Thread(this::aimTrainerWindow);
@@ -39,8 +38,6 @@ public class AimTrainerWindow {
         countDownAimTrainerThread = new Thread(this::countDownAimTrainer);
 
         targetsForAimTrainerThread = new Thread(this::targetsForAimTrainer);
-
-        respawnThread = new Thread(this::respawn);
     }
 
     public void aimTrainerWindow() {
@@ -125,24 +122,24 @@ public class AimTrainerWindow {
 
     public void targetsForAimTrainer() {
         MainMenu.myFrame.dispose();
-        MyFrame targetWindow = new MyFrame();
+        targetWindow = new MyFrame();
         targetWindow.setLayout(null);
-        respawnThread.start();
 
         while (countDownTargets) {
             try {
-                targetWindow.add(targetGen());
-                index++;
-                SwingUtilities.updateComponentTreeUI(targetWindow);
-                Thread.sleep(difficulty);
-
+                if(targetList.size() == 5) {
+                    targetWindow.remove(targetList.get(0));
+                    targetList.remove(0);
+                    currentElement--;
+                    SwingUtilities.updateComponentTreeUI(targetWindow);
+                } else {
+                    targetWindow.add(targetGen());
+                    currentElement++;
+                    SwingUtilities.updateComponentTreeUI(targetWindow);
+                    Thread.sleep(difficulty);
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            }
-            if(respawn) {
-                targetList.remove(0);
-                index--;
-                SwingUtilities.updateComponentTreeUI(targetWindow);
             }
         }
     }
@@ -150,32 +147,14 @@ public class AimTrainerWindow {
     public JPanel targetGen() {
         int randomX = (int) (Math.random() * 780);
         int randomY = (int) (Math.random() * 480);
-
         int randomBox = (int) (Math.random() * (100 - 50)) + 50;
+
         JPanel target = new JPanel();
         target.setBounds(randomX, randomY, randomBox, randomBox);
         target.setBackground(Color.BLACK);
+
         targetList.add(target);
 
-        for (int i = 0; i < targetList.size(); i++) {
-            if (targetList.get(index).getLocation() == targetList.get(i).getLocation()) {
-                targetList.remove(index);
-                targetGen();
-            } else {
-                return targetList.get(index);
-            }
-        }
-        return null;
-    }
-
-    public void respawn() {
-        while (respawnThread.isAlive()) {
-            try {
-                Thread.sleep(timeToRespawn);
-                respawn = true;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        return targetList.get(currentElement);
     }
 }

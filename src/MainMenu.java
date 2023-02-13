@@ -67,7 +67,7 @@ public class MainMenu {
         hardButton.setPreferredSize(new Dimension(100, 25));
         hardButton.addActionListener(e -> {
             remover();
-            AimTrainerWindow.difficulty = 100;
+            AimTrainerWindow.difficulty = 300;
             AimTrainerWindow.timer = 90;
             new AimTrainerWindow();
         });

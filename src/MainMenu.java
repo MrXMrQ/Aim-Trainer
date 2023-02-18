@@ -68,7 +68,7 @@ public class MainMenu {
         hardButton.addActionListener(e -> {
             remover();
             AimTrainerWindow.difficulty = 300;
-            AimTrainerWindow.timer = 90;
+            AimTrainerWindow.timer = 10;
             new AimTrainerWindow();
         });
         panelCENTER.add(hardButton);

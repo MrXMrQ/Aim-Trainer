@@ -1,11 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class AimTrainerWindow extends MouseAdapter {
-
-    MyFrame targetWindow;
     //Panel
     JPanel panelNORTH;
     JPanel panelCENTER;
@@ -17,32 +14,17 @@ public class AimTrainerWindow extends MouseAdapter {
     //Thread
     Thread aimThread;
     Thread countDownEnterThread;
-    Thread countDownAimTrainerThread;
-    Thread targetsForAimTrainerThread;
-    Thread updateThread;
 
     //Other
     public static int difficulty;
     boolean countDownAfterEnterFinished = false;
-    boolean countDownTargets = true;
     public static int timer;
-    ArrayList<JPanel> targetList = new ArrayList<>();
-    int currentElement = 0;
-    int score = 0;
-    int missed;
-    int totalClicks;
 
     public AimTrainerWindow() {
         aimThread = new Thread(this::aimTrainerWindow);
         aimThread.start();
 
         countDownEnterThread = new Thread(this::countDownEnter);
-
-        countDownAimTrainerThread = new Thread(this::countDownAimTrainer);
-
-        targetsForAimTrainerThread = new Thread(this::targetsForAimTrainer);
-
-        updateThread = new Thread(this::update);
     }
 
     public void aimTrainerWindow() {
@@ -77,8 +59,11 @@ public class AimTrainerWindow extends MouseAdapter {
 
         while (aimThread.isAlive()) {
             if (countDownAfterEnterFinished) {
-                targetsForAimTrainerThread.start();
                 countDownAfterEnterFinished = false;
+                aimThread.interrupt();
+                countDownEnterThread.interrupt();
+                new AimTargets();
+
             }
         }
     }
@@ -101,91 +86,6 @@ public class AimTrainerWindow extends MouseAdapter {
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void targetsForAimTrainer() {
-        MainMenu.myFrame.dispose();
-        targetWindow = new MyFrame();
-        targetWindow.setLayout(null);
-        countDownAimTrainerThread.start();
-
-        while (countDownTargets) {
-            try {
-                if (targetList.size() == 5) {
-                    targetWindow.remove(targetList.get(0));
-                    targetList.remove(0);
-                    currentElement--;
-                    SwingUtilities.updateComponentTreeUI(targetWindow);
-                } else {
-                    targetWindow.add(targetGen());
-                    currentElement++;
-                    SwingUtilities.updateComponentTreeUI(targetWindow);
-                    Thread.sleep(difficulty);
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public void countDownAimTrainer() {
-        updateThread.start();
-        targetWindow.setTitle(timer + " seconds, score: " + score + " , clicks missed: " + (totalClicks - missed) + " , total clicks: " + totalClicks);
-
-        while (timer >= 0) {
-            try {
-                targetWindow.setTitle(timer + " seconds, score: " + score + " , clicks missed: " + (totalClicks - missed) + " , total clicks: " + totalClicks);
-                timer--;
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (timer <= 0) {
-                countDownTargets = false;
-            }
-        }
-    }
-
-    public JPanel targetGen() {
-        int randomX = (int) (Math.random() * 780);
-        int randomY = (int) (Math.random() * 480);
-        int randomBox = (int) (Math.random() * (100 - 50)) + 50;
-
-        JPanel target = new JPanel();
-        target.setBounds(randomX, randomY, randomBox, randomBox);
-        target.setBackground(Color.BLACK);
-        target.addMouseListener(this);
-        targetList.add(target);
-
-        for (int i = 0; i < targetList.size(); i++) {
-            if (targetList.indexOf(i) == target.getX()) {
-                targetList.remove(target);
-                targetGen();
-            } else {
-                return targetList.get(currentElement);
-            }
-        }
-        return null;
-    }
-
-    public void update() {
-        while (updateThread.isAlive()) {
-            SwingUtilities.updateComponentTreeUI(targetWindow);
-        }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        for (int i = 0; i < targetList.size(); i++) {
-            if (e.getSource() == targetList.get(i)) {
-                score+=10;
-                totalClicks++;
-                targetList.get(i).setBackground(null);
-            } else {
-                missed++;
-                totalClicks++;
             }
         }
     }

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AimTrainer.iml" filepath="$PROJECT_DIR$/AimTrainer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aim_trainer.iml" filepath="$PROJECT_DIR$/aim_trainer.iml" />
     </modules>
   </component>
 </project>
